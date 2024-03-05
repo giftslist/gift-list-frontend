@@ -1,11 +1,9 @@
-import { Footer, Header, Input } from "./components";
-import { GiftHome } from "./assets/images/gift-home";
+import { GiftHome } from "../assets/images/gift-home";
+import { Input, Template } from "../components";
 
-export function App() {
+export function Home() {
 	return (
-		<div className="bg-orange-100 h-screen flex flex-col justify-between items-center">
-			<Header />
-
+		<Template>
 			<main className="flex flex-row items-center justify-center">
 				<GiftHome />
 
@@ -22,32 +20,36 @@ export function App() {
 							name="email"
 							id="email"
 						/>
+
 						<Input
 							label="Senha"
 							placeholder="Digite aqui..."
 							name="password"
 							id="password"
 						/>
-
-						<div className="flex flex-row justify-between w-full mt-2">
+						<button
+							type="button"
+							className=" bg-emerald-700 text-white font-bold text-base py-1 rounded-lg"
+						>
+							Entre
+						</button>
+						<div className="flex flex-row justify-between w-full mt-2 gap-2">
 							<button
 								type="button"
-								className="min-w-36 bg-emerald-700 text-white font-bold text-base py-1 rounded-lg"
+								className="px-4 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
 							>
-								Entre
+								Cadastre-se Anfitriao
 							</button>
 							<button
 								type="button"
-								className="min-w-36 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
+								className="px-4 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
 							>
-								Cadastre-se
+								Cadastre-se Convidado
 							</button>
 						</div>
 					</form>
 				</div>
 			</main>
-
-			<Footer />
-		</div>
+		</Template>
 	);
 }
