@@ -1,16 +1,24 @@
 import { InputHTMLAttributes } from "react";
+import { tv, VariantProps } from "tailwind-variants";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-	label: string;
-}
+const input = tv({
+	base: "p-2 rounded-lg mb-4 placeholder:text-xs",
+	variants: {},
+	defaultVariants: {},
+});
 
-export function Input({ label, ...rest }: InputProps) {
+export type InputProps = InputHTMLAttributes<HTMLInputElement> &
+	VariantProps<typeof input> & {
+		label: string;
+	};
+
+export function Input({ label, className, ...props }: InputProps) {
 	return (
 		<div className="flex flex-col">
 			<label htmlFor="email" className="text-yellow-900 text-xs">
 				{label}
 			</label>
-			<input {...rest} className="p-2 rounded-lg mb-4 placeholder:text-xs" />
+			<input {...props} className={input({ className })} />
 		</div>
 	);
 }
