@@ -1,14 +1,22 @@
 import { useState } from "react";
-import { Input, Template, RadioButton } from "../components";
+import { Input, Template } from "../components";
 import { Toy, Cake, Knife, Plus, Rings, Trash } from "../assets/icons";
 
 export function SignUp() {
-	const [step, setStep] = useState(5);
+	const [step, setStep] = useState(1);
 	const [selectedOption, setSelectedOption] = useState("option1");
 
 	const handleOptionChange = (event) => {
 		setSelectedOption(event.target.value);
 	};
+
+	function nextStep() {
+		setStep((prevState) => prevState + 1);
+	}
+
+	function backStep() {
+		setStep((prevState) => prevState - 1);
+	}
 
 	return (
 		<Template back={true}>
@@ -39,6 +47,7 @@ export function SignUp() {
 
 							<button
 								type="button"
+								onClick={nextStep}
 								className="w-fit px-4 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
 							>
 								Avançar
@@ -84,6 +93,7 @@ export function SignUp() {
 							<div className="flex flex-row justify-around items-center">
 								<button
 									type="button"
+									onClick={backStep}
 									className="w-fit px-4 bg-orange-500 text-white font-bold text-base py-1 rounded-lg"
 								>
 									Voltar
@@ -91,6 +101,7 @@ export function SignUp() {
 
 								<button
 									type="button"
+									onClick={nextStep}
 									className="w-fit px-4 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
 								>
 									Avançar
@@ -129,6 +140,7 @@ export function SignUp() {
 							<div className="flex flex-row justify-around items-center">
 								<button
 									type="button"
+									onClick={backStep}
 									className="w-fit px-4 bg-orange-500 text-white font-bold text-base py-1 rounded-lg"
 								>
 									Voltar
@@ -136,6 +148,7 @@ export function SignUp() {
 
 								<button
 									type="button"
+									onClick={nextStep}
 									className="w-fit px-4 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
 								>
 									Avançar
@@ -214,6 +227,7 @@ export function SignUp() {
 							<div className="flex flex-row justify-around items-center">
 								<button
 									type="button"
+									onClick={backStep}
 									className="w-fit px-4 bg-orange-500 text-white font-bold text-base py-1 rounded-lg"
 								>
 									Voltar
@@ -221,6 +235,7 @@ export function SignUp() {
 
 								<button
 									type="button"
+									onClick={nextStep}
 									className="w-fit px-4 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
 								>
 									Avançar
@@ -284,6 +299,7 @@ export function SignUp() {
 							<div className="flex flex-row justify-around items-center">
 								<button
 									type="button"
+									onClick={backStep}
 									className="w-fit px-4 bg-orange-500 text-white font-bold text-base py-1 rounded-lg"
 								>
 									Voltar
@@ -291,6 +307,7 @@ export function SignUp() {
 
 								<button
 									type="button"
+									onClick={nextStep}
 									className="w-fit px-4 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
 								>
 									Avançar
@@ -324,6 +341,7 @@ export function SignUp() {
 							<div className="flex flex-row justify-around items-center">
 								<button
 									type="button"
+									onClick={backStep}
 									className="w-fit px-4 bg-orange-500 text-white font-bold text-base py-1 rounded-lg"
 								>
 									Voltar
