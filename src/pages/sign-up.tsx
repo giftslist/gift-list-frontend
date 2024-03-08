@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Input, Template } from "../components";
+import React, { useState } from "react";
+import { Input, RadioButton, Template } from "../components";
 import { Toy, Cake, Knife, Plus, Rings, Trash } from "../assets/icons";
 
 export function SignUp() {
 	const [step, setStep] = useState(1);
 	const [selectedOption, setSelectedOption] = useState("option1");
 
-	const handleOptionChange = (event) => {
-		setSelectedOption(event.target.value);
+	const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setSelectedOption(event.currentTarget.value);
 	};
 
 	function nextStep() {
@@ -164,51 +164,42 @@ export function SignUp() {
 							</h2>
 
 							<div className="flex flex-row flex-wrap gap-2">
-								<label className="relative bg-red-200 flex flex-row items-center gap-2 w-fit p-2 rounded-lg text-red-900 font-bold text-xs">
-									<Toy />
-									<input
-										type="radio"
-										value="cha_bebe"
-										checked={selectedOption === "cha_bebe"}
-										onChange={handleOptionChange}
-										className="opacity-0 absolute top-0 left-0"
-									/>
-									<span>Chá de Bebê</span>
-								</label>
+								<RadioButton
+									icon={<Toy />}
+									label="Chá de Bebê"
+									value="cha_bebe"
+									color="red"
+									checked={selectedOption === "cha_bebe"}
+									onChange={handleOptionChange}
+								/>
 
-								<label className="relative bg-orange-200 flex flex-row items-center gap-2 w-fit p-2 rounded-lg text-orange-900 font-bold text-xs">
-									<Knife />
-									<input
-										type="radio"
-										value="cha_cozinha"
-										checked={selectedOption === "cha_cozinha"}
-										onChange={handleOptionChange}
-										className="opacity-0 absolute top-0 left-0"
-									/>
-									<span>Chá de Cozinha</span>
-								</label>
-								<label className="relative bg-emerald-200 flex flex-row items-center gap-2 w-fit p-2 rounded-lg text-emerald-900 font-bold text-xs">
-									<Cake />
-									<input
-										type="radio"
-										value="aniversario"
-										checked={selectedOption === "aniversario"}
-										onChange={handleOptionChange}
-										className="opacity-0 absolute top-0 left-0"
-									/>
-									<span>Aniversário</span>
-								</label>
-								<label className="relative bg-sky-200 flex flex-row items-center gap-2 w-fit p-2 rounded-lg text-sky-900 font-bold text-xs">
-									<Rings />
-									<input
-										type="radio"
-										value="lista_de_casamento"
-										checked={selectedOption === "lista_de_casamento"}
-										onChange={handleOptionChange}
-										className="opacity-0 absolute top-0 left-0"
-									/>
-									<span>Lista de Casamento</span>
-								</label>
+								<RadioButton
+									icon={<Knife />}
+									label="Chá de Cozinha"
+									value="cha_cozinha"
+									color="orange"
+									checked={selectedOption === "cha_cozinha"}
+									onChange={handleOptionChange}
+								/>
+
+								<RadioButton
+									icon={<Cake />}
+									label="Aniversário"
+									value="aniversario"
+									color="emerald"
+									checked={selectedOption === "aniversario"}
+									onChange={handleOptionChange}
+								/>
+
+								<RadioButton
+									icon={<Rings />}
+									label="Lista de Casamento"
+									value="lista_de_casamento"
+									color="sky"
+									checked={selectedOption === "lista_de_casamento"}
+									onChange={handleOptionChange}
+								/>
+
 								<label className="relative bg-neutral-200 flex flex-row items-center gap-2 w-fit p-2 rounded-lg text-neutral-400 font-bold text-xs">
 									<Plus fill="#758CA3" />
 									<input
