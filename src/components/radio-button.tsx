@@ -1,11 +1,19 @@
 import React from "react";
+import { twMerge } from "tailwind-merge";
 
 interface RadioButtonProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label: string;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	icon: React.ReactNode;
-	color: string;
+	kind: string;
 }
+
+const colors = [
+	{ name: "red", value: "bg-red-200 text-red-900" },
+	{ name: "emerald", value: "bg-emerald-200 text-emerald-900" },
+	{ name: "sky", value: "bg-sky-200 text-sky-900" },
+	{ name: "orange", value: "bg-orange-200 text-orange-900" },
+];
 
 export function RadioButton({
 	value,
@@ -13,12 +21,15 @@ export function RadioButton({
 	onChange,
 	label,
 	icon,
-	color,
+	kind,
 	...rest
 }: RadioButtonProps) {
 	return (
 		<label
-			className={`relative bg-${color}-200 flex flex-row items-center gap-2 w-fit p-2 rounded-lg text-${color}-900 font-bold text-xs`}
+			className={twMerge(
+				"relative flex flex-row items-center gap-2 w-fit p-2 rounded-lg  font-bold text-xs",
+				`${colors.find((colorX) => colorX.name === kind)?.value}`
+			)}
 		>
 			{icon}
 			<input

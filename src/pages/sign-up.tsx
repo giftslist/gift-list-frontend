@@ -1,8 +1,19 @@
 import React, { useState } from "react";
 import { Input, RadioButton, Template } from "../components";
 import { Toy, Cake, Knife, Plus, Rings, Trash } from "../assets/icons";
+import { useForm } from "react-hook-form";
+
+type FormValues = {
+	name: string;
+};
 
 export function SignUp() {
+	const {
+		watch,
+		register,
+		handleSubmit,
+		formState: { errors, isValid },
+	} = useForm<FormValues>({ mode: "all" });
 	const [step, setStep] = useState(1);
 	const [selectedOption, setSelectedOption] = useState("option1");
 
@@ -18,6 +29,12 @@ export function SignUp() {
 		setStep((prevState) => prevState - 1);
 	}
 
+	function submitForm(values: any) {
+		console.log(values);
+
+		window.alert(JSON.stringify(values, null, 2));
+	}
+
 	return (
 		<Template back={true}>
 			<div>
@@ -28,7 +45,10 @@ export function SignUp() {
 					Siga as etapas para se cadastrar.
 				</span>
 
-				<div className="mt-4 w-[680px] h-[480px] bg-orange-50 rounded-lg flex justify-center">
+				<form
+					onSubmit={handleSubmit(submitForm)}
+					className="mt-4 w-[680px] h-[480px] bg-orange-50 rounded-lg flex justify-center"
+				>
 					{step === 1 && (
 						<div className="flex flex-col items-center justify-around px-9 h-full">
 							<h2 className="text-center text-yellow-900 text-2xl font-bold">
@@ -38,10 +58,11 @@ export function SignUp() {
 							<Input
 								label="Nome"
 								placeholder="Digite aqui..."
-								name="name"
 								id="name"
 								type="text"
-								required
+								{...register("name", {
+									required: "Digite seu nome, por favor!",
+								})}
 								className="w-80"
 							/>
 
@@ -63,30 +84,36 @@ export function SignUp() {
 
 							<div className="flex flex-col ">
 								<Input
-									name="email"
 									id="email"
 									placeholder="Digite aqui..."
 									type="email"
 									label="E-mail"
 									required
+									{...register("email", {
+										required: "Digite seu e-mail corretamente!",
+									})}
 								/>
 
 								<Input
-									name="password"
 									id="password"
 									placeholder="Digite aqui..."
 									type="password"
 									label="Senha"
 									required
+									{...register("password", {
+										required: "A senha precisa ser mais forte!",
+									})}
 								/>
 
 								<Input
-									name="password-2"
 									id="password-2"
 									placeholder="Digite aqui..."
 									type="password"
 									label="Confirmar senha"
 									required
+									{...register("password-2", {
+										required: "A senha precisa ser igual a anterior",
+									})}
 								/>
 							</div>
 
@@ -125,15 +152,20 @@ export function SignUp() {
 									type="text"
 									label="Nome do evento"
 									required
+									{...register("event_name", {
+										required: "Digite o nome do seu evento",
+									})}
 								/>
 
 								<Input
-									name="event_date"
 									id="event_date"
 									placeholder="Digite aqui..."
 									type="date"
 									label="Data do evento"
 									required
+									{...register("event_date", {
+										required: "Escolha a data do seu evento",
+									})}
 								/>
 							</div>
 
@@ -168,7 +200,7 @@ export function SignUp() {
 									icon={<Toy />}
 									label="Chá de Bebê"
 									value="cha_bebe"
-									color="red"
+									kind="red"
 									checked={selectedOption === "cha_bebe"}
 									onChange={handleOptionChange}
 								/>
@@ -177,7 +209,7 @@ export function SignUp() {
 									icon={<Knife />}
 									label="Chá de Cozinha"
 									value="cha_cozinha"
-									color="orange"
+									kind="orange"
 									checked={selectedOption === "cha_cozinha"}
 									onChange={handleOptionChange}
 								/>
@@ -186,7 +218,7 @@ export function SignUp() {
 									icon={<Cake />}
 									label="Aniversário"
 									value="aniversario"
-									color="emerald"
+									kind="emerald"
 									checked={selectedOption === "aniversario"}
 									onChange={handleOptionChange}
 								/>
@@ -195,7 +227,7 @@ export function SignUp() {
 									icon={<Rings />}
 									label="Lista de Casamento"
 									value="lista_de_casamento"
-									color="sky"
+									kind="sky"
 									checked={selectedOption === "lista_de_casamento"}
 									onChange={handleOptionChange}
 								/>
@@ -347,8 +379,9 @@ export function SignUp() {
 							</div>
 						</div>
 					)}
-				</div>
+				</form>
 			</div>
+			<pre>{JSON.stringify(watch(), null, 2)}</pre>
 		</Template>
 	);
 }
