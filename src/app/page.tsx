@@ -12,7 +12,12 @@ interface Login {
 }
 
 export default function Page() {
-	const { watch, register, handleSubmit, formState } = useForm<Login>({
+	const {
+		watch,
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<Login>({
 		mode: "all",
 	});
 
@@ -23,13 +28,7 @@ export default function Page() {
 			.post("users/login", {
 				...credentials,
 			})
-			.then((response) => response.data)
-			.then((data) => {
-				alert(`ID: ${data.id}\nNome: ${data.name}\nEmail: ${data.email}`);
-			})
-			.catch((error) => {
-				alert(error?.response?.data?.message || "Erro ao logar");
-			});
+			.catch((error) => error.message);
 	}
 
 	return (
@@ -51,23 +50,45 @@ export default function Page() {
 							E-mail:
 						</label>
 						<input
-							className="p-2 rounded-lg mb-4 placeholder:text-xs"
+							className={`p-2 text-sm rounded-lg placeholder:text-xs ${
+								errors.email ? "mb-0 border-b-2 border-red-800" : "mb-5"
+							}`}
 							placeholder="Digite aqui..."
 							id="email"
 							type="email"
-							{...register("email")}
+							{...register("email", {
+								required: "E-mail é obrigatório",
+								pattern: {
+									value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+									message: "E-mail inválido",
+								},
+							})}
 						/>
+						{errors.email && (
+							<span className="text-xs text-red-950 mb-4">
+								{errors.email.message}
+							</span>
+						)}
 
 						<label htmlFor="password" className="text-yellow-900 text-xs">
 							Senha:
 						</label>
 						<input
-							className="p-2 rounded-lg mb-4 placeholder:text-xs"
+							className={`p-2 text-sm rounded-lg placeholder:text-xs ${
+								errors.password ? "mb-0 border-b-2 border-red-800" : "mb-5"
+							}`}
 							placeholder="Digite aqui..."
 							id="password"
 							type="password"
-							{...register("password")}
+							{...register("password", {
+								required: "Senha é obrigatória",
+							})}
 						/>
+						{errors.password && (
+							<span className="text-xs text-red-950 mb-4">
+								{errors.password.message}
+							</span>
+						)}
 
 						<div className="w-full flex flex-col justify-center gap-2">
 							<button
