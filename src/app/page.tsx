@@ -5,6 +5,8 @@ import { api } from "@api";
 import { Template } from "@components";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useState } from "react";
 
 interface Login {
 	email: string;
@@ -20,15 +22,24 @@ export default function Page() {
 	} = useForm<Login>({
 		mode: "all",
 	});
+	const [loginLoading, setLoginLoading] = useState(false);
 
 	async function submitForm(credentials: Login) {
-		console.log(credentials);
-
+		setLoginLoading(true);
 		await api
 			.post("users/login", {
 				...credentials,
 			})
-			.catch((error) => error.message);
+			.then(() => {
+				toast.error("Logado com sucesso!");
+			})
+			.catch((error) => {
+				toast.error(error.message);
+			})
+			.finally(() => {
+				// Redirect to dashboard
+				setLoginLoading(false);
+			});
 	}
 
 	return (
@@ -84,6 +95,7 @@ export default function Page() {
 								required: "Senha é obrigatória",
 							})}
 						/>
+
 						{errors.password && (
 							<span className="text-xs text-red-950 mb-4">
 								{errors.password.message}
@@ -93,9 +105,11 @@ export default function Page() {
 						<div className="w-full flex flex-col justify-center gap-2">
 							<button
 								type="submit"
-								className=" bg-emerald-700 text-white font-bold text-base py-1 rounded-lg"
+								className={`bg-emerald-700 text-white font-bold text-base py-1 rounded-lg ${
+									loginLoading ? "text-emerald-950" : ""
+								}`}
 							>
-								Entre
+								{loginLoading ? "Entrando..." : "Entre"}
 							</button>
 
 							<Link

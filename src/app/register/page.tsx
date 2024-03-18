@@ -3,7 +3,8 @@ import { Template } from "@components";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { api } from "@/api";
-
+import { toast } from "sonner";
+import { useState } from "react";
 interface Register {
 	name: string;
 	email: string;
@@ -22,8 +23,11 @@ export default function Page() {
 	} = useForm<Register>({
 		mode: "all",
 	});
+	const [registerLoading, setRegisterLoading] = useState(false);
 
 	async function submitForm({ name, email, password }: Register) {
+		setRegisterLoading(true);
+
 		api
 			.post(
 				"/users",
@@ -38,9 +42,15 @@ export default function Page() {
 					},
 				}
 			)
-			.catch((error) => error.message)
-			.finally(() => {
+			.then(() => {
+				toast.error("Logado com sucesso!");
 				router.push("/");
+			})
+			.catch((error) => {
+				toast.error(error.message);
+			})
+			.finally(() => {
+				setRegisterLoading(false);
 			});
 	}
 
@@ -154,9 +164,11 @@ export default function Page() {
 
 					<button
 						type="submit"
-						className=" bg-emerald-700 text-white font-bold text-base py-1 rounded-lg"
+						className={`bg-emerald-700 text-white font-bold text-base py-1 rounded-lg ${
+							registerLoading ? "text-emerald-950" : ""
+						}`}
 					>
-						Cadastrar
+						{registerLoading ? "Cadastrando..." : "Cadastrar"};
 					</button>
 				</form>
 				<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
