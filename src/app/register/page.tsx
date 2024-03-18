@@ -1,11 +1,11 @@
 "use client";
-
 import { Template } from "@components";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { api } from "@/api";
 
 interface Register {
+	name: string;
 	email: string;
 	password: string;
 	passwordCheck: string;
@@ -13,13 +13,31 @@ interface Register {
 
 export default function Page() {
 	const router = useRouter();
-	const { watch, register, handleSubmit, formState } = useForm<Register>({
+	const {
+		watch,
+		register,
+		handleSubmit,
+		formState: { errors },
+		getValues,
+	} = useForm<Register>({
 		mode: "all",
 	});
 
-	async function submitForm(credentials: Register) {
+	async function submitForm({ name, email, password }: Register) {
 		api
-			.post("", credentials)
+			.post(
+				"/users",
+				{
+					name,
+					email,
+					password,
+				},
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			)
 			.catch((error) => error.message)
 			.finally(() => {
 				router.push("/");
@@ -40,40 +58,99 @@ export default function Page() {
 
 				<form
 					onSubmit={handleSubmit(submitForm)}
-					className="flex flex-col justify-start bg-orange-200 p-5 rounded-lg"
+					className="flex flex-col justify-start bg-orange-200 p-5 rounded-lg w-[600px]"
 				>
+					<label htmlFor="name" className="text-yellow-900 text-xs">
+						Nome:
+					</label>
+					<input
+						className={`p-2 text-sm rounded-lg placeholder:text-xs ${
+							errors.name ? "mb-0 border-b-2 border-red-800" : "mb-5"
+						}`}
+						placeholder="Digite aqui..."
+						id="name"
+						type="text"
+						{...register("name", {
+							required: "Nome é obrigatório",
+						})}
+					/>
+					{errors.name && (
+						<span className="text-xs text-red-950 mb-4">
+							{errors.name.message}
+						</span>
+					)}
+
 					<label htmlFor="email" className="text-yellow-900 text-xs">
 						E-mail:
 					</label>
 					<input
-						className="p-2 rounded-lg mb-4 placeholder:text-xs"
+						className={`p-2 text-sm rounded-lg placeholder:text-xs ${
+							errors.email ? "mb-0 border-b-2 border-red-800" : "mb-5"
+						}`}
 						placeholder="Digite aqui..."
 						id="email"
 						type="email"
-						{...register("email")}
+						{...register("email", {
+							required: "E-mail é obrigatório",
+							pattern: {
+								value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+								message: "E-mail inválido",
+							},
+						})}
 					/>
+					{errors.email && (
+						<span className="text-xs text-red-950 mb-4">
+							{errors.email.message}
+						</span>
+					)}
 
 					<label htmlFor="password" className="text-yellow-900 text-xs">
 						Senha:
 					</label>
 					<input
-						className="p-2 rounded-lg mb-4 placeholder:text-xs"
+						className={`p-2 text-sm rounded-lg placeholder:text-xs ${
+							errors.password ? "mb-0 border-b-2 border-red-800" : "mb-5"
+						}`}
 						placeholder="Digite aqui..."
 						id="password"
 						type="password"
-						{...register("password")}
+						{...register("password", {
+							required: "Senha é obrigatória",
+							minLength: {
+								value: 8,
+								message: "Senha deve ter pelo menos 8 caracteres",
+							},
+						})}
 					/>
+					{errors.password && (
+						<span className="text-xs text-red-950 mb-4">
+							{errors.password.message}
+						</span>
+					)}
 
 					<label htmlFor="passwordCheck" className="text-yellow-900 text-xs">
-						Confime a senha:
+						Confirme a senha:
 					</label>
 					<input
-						className="p-2 rounded-lg mb-4 placeholder:text-xs"
+						className={`p-2 text-sm rounded-lg placeholder:text-xs ${
+							errors.passwordCheck ? "mb-0 border-b-2 border-red-800" : "mb-5"
+						}`}
 						placeholder="Digite aqui..."
 						id="passwordCheck"
 						type="password"
-						{...register("passwordCheck")}
+						{...register("passwordCheck", {
+							required: "Por favor, confirme sua senha",
+							validate: (value) =>
+								value === "" ||
+								value === getValues("password") ||
+								"As senhas não coincidem",
+						})}
 					/>
+					{errors.passwordCheck && (
+						<span className="text-xs text-red-950 mb-4">
+							{errors.passwordCheck.message}
+						</span>
+					)}
 
 					<button
 						type="submit"
