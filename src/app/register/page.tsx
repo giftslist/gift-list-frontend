@@ -168,7 +168,7 @@ export default function Page() {
 							registerLoading ? "text-emerald-950" : ""
 						}`}
 					>
-						{registerLoading ? "Cadastrando..." : "Cadastrar"};
+						{registerLoading ? "Cadastrando..." : "Cadastrar"}
 					</button>
 				</form>
 				<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
