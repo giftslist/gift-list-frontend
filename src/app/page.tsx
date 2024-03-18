@@ -1,46 +1,36 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
 import { GiftHome } from "../assets/images/gift-home";
 import { api } from "@api";
-import { Input, Template } from "@components";
+import { Template } from "@components";
+import { useForm } from "react-hook-form";
+import Link from "next/link";
 
-interface User {
+interface Login {
 	email: string;
 	password: string;
 }
 
 export default function Page() {
-	const [user, setUser] = useState<User>({
-		email: "",
-		password: "",
+	const { watch, register, handleSubmit, formState } = useForm<Login>({
+		mode: "all",
 	});
 
-	const handleEmail = (event: ChangeEvent<HTMLInputElement>) => {
-		setUser((prevUser) => ({
-			...prevUser,
-			email: event?.target.value,
-		}));
-	};
+	async function submitForm(credentials: Login) {
+		console.log(credentials);
 
-	const handlePassword = (event: ChangeEvent<HTMLInputElement>) => {
-		setUser((prevUser) => ({
-			...prevUser,
-			password: event?.target.value,
-		}));
-	};
-
-	const handleLogin = async () => {
-		try {
-			const { data } = await api.post("users/login", {
-				...user,
+		await api
+			.post("users/login", {
+				...credentials,
+			})
+			.then((response) => response.data)
+			.then((data) => {
+				alert(`ID: ${data.id}\nNome: ${data.name}\nEmail: ${data.email}`);
+			})
+			.catch((error) => {
+				alert(error?.response?.data?.message || "Erro ao logar");
 			});
-
-			alert(`ID: ${data.id}\nNome: ${data.name}\nEmail: ${data.email}`);
-		} catch (err: any) {
-			alert(err?.response?.data?.message || "Erro ao logar");
-		}
-	};
+	}
 
 	return (
 		<Template>
@@ -53,46 +43,49 @@ export default function Page() {
 						suas surpresas.
 					</h2>
 
-					<form action="" className="flex flex-col">
-						<Input
-							label="E-mail"
+					<form
+						onSubmit={handleSubmit(submitForm)}
+						className="flex flex-col w-full"
+					>
+						<label htmlFor="email" className="text-yellow-900 text-xs">
+							E-mail:
+						</label>
+						<input
+							className="p-2 rounded-lg mb-4 placeholder:text-xs"
 							placeholder="Digite aqui..."
-							name="email"
 							id="email"
-							onChange={handleEmail}
+							type="email"
+							{...register("email")}
 						/>
-						<Input
-							label="Senha"
+
+						<label htmlFor="password" className="text-yellow-900 text-xs">
+							Senha:
+						</label>
+						<input
+							className="p-2 rounded-lg mb-4 placeholder:text-xs"
 							placeholder="Digite aqui..."
-							name="password"
 							id="password"
-							onChange={handlePassword}
+							type="password"
+							{...register("password")}
 						/>
 
-						<button
-							type="button"
-							className=" bg-emerald-700 text-white font-bold text-base py-1 rounded-lg"
-							onClick={handleLogin}
-						>
-							Entre
-						</button>
-
-						<div className="flex flex-row justify-between w-full mt-2 gap-2">
+						<div className="w-full flex flex-col justify-center gap-2">
 							<button
-								type="button"
-								className="px-4 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
+								type="submit"
+								className=" bg-emerald-700 text-white font-bold text-base py-1 rounded-lg"
 							>
-								Cadastre-se Anfitriao
+								Entre
 							</button>
 
-							<button
-								type="button"
-								className="px-4 bg-sky-800 text-white font-bold text-base py-1 rounded-lg"
+							<Link
+								href="/register"
+								className="bg-sky-800 text-center text-white font-bold text-base py-1 rounded-lg"
 							>
-								Cadastre-se Convidado
-							</button>
+								Cadastre-se
+							</Link>
 						</div>
 					</form>
+					<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
 				</div>
 			</main>
 		</Template>

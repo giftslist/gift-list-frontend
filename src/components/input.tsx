@@ -13,6 +13,8 @@ export type InputProps = InputHTMLAttributes<HTMLInputElement> &
 	};
 
 export function Input({ label, className, ...props }: InputProps) {
+	console.log(props);
+
 	return (
 		<div className="flex flex-col">
 			<label htmlFor="email" className="text-yellow-900 text-xs">
