@@ -1,8 +1,12 @@
-export function Cake() {
+interface CakeTypes {
+	size?: string;
+}
+
+export function Cake({ size }: CakeTypes) {
 	return (
 		<svg
-			width="30"
-			height="28"
+			width={size || "30"}
+			height={size || "28"}
 			viewBox="0 0 30 28"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
