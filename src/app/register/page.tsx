@@ -43,7 +43,7 @@ export default function Page() {
 				}
 			)
 			.then(() => {
-				toast.error("Logado com sucesso!");
+				toast.success("Cadastrado com sucesso!");
 				router.push("/");
 			})
 			.catch((error) => {

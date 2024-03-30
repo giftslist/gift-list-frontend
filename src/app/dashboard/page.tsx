@@ -4,6 +4,9 @@ import { Cake, Trash } from "@/assets/icons";
 import { Template } from "@components";
 
 export default function Page() {
+	const storagedUser = localStorage.getItem("user") || "";
+	const user = JSON.parse(storagedUser);
+
 	const hours = new Date().getHours();
 	const welcomeText =
 		hours > 0 && hours < 12
@@ -17,7 +20,7 @@ export default function Page() {
 			<div className="flex flex-col gap-5">
 				<div>
 					<h1 className="text-2xl text-sky-950 font-bold">
-						{welcomeText}! Anfitrião, como vai?
+						{welcomeText}! {user.name}, como vai?
 					</h1>
 					<span className=" text-sky-950 text-sm">
 						Bem-vindo(a) a sua dashboard!

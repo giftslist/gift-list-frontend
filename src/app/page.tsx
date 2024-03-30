@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Login {
 	email: string;
@@ -14,6 +15,7 @@ interface Login {
 }
 
 export default function Page() {
+	const router = useRouter();
 	const {
 		watch,
 		register,
@@ -30,14 +32,15 @@ export default function Page() {
 			.post("users/login", {
 				...credentials,
 			})
-			.then(() => {
-				toast.error("Logado com sucesso!");
+			.then((response) => {
+				localStorage.setItem("user", JSON.stringify(response.data));
+				router.push("dashboard");
+				toast.success("Logado com sucesso!");
 			})
 			.catch((error) => {
 				toast.error(error.message);
 			})
 			.finally(() => {
-				// Redirect to dashboard
 				setLoginLoading(false);
 			});
 	}
