@@ -28,21 +28,30 @@ export default function Page() {
 
 	async function submitForm(credentials: Login) {
 		setLoginLoading(true);
-		await api
-			.post("users/login", {
-				...credentials,
-			})
-			.then((response) => {
-				localStorage.setItem("user", JSON.stringify(response.data));
-				router.push("dashboard");
-				toast.success("Logado com sucesso!");
-			})
-			.catch((error) => {
-				toast.error(error.message);
-			})
-			.finally(() => {
-				setLoginLoading(false);
-			});
+
+		// Verifica se o localStorage está disponível
+		if (typeof localStorage !== "undefined") {
+			await api
+				.post("users/login", {
+					...credentials,
+				})
+				.then((response) => {
+					localStorage.setItem("user", JSON.stringify(response.data));
+					router.push("dashboard");
+					toast.success("Logado com sucesso!");
+				})
+				.catch((error) => {
+					toast.error(error.message);
+				})
+				.finally(() => {
+					setLoginLoading(false);
+				});
+		} else {
+			console.error("O localStorage não está disponível neste ambiente.");
+			// Lida com o caso em que o localStorage não está disponível
+			setLoginLoading(false);
+			// Você pode fazer algo mais aqui, como exibir uma mensagem de erro para o usuário
+		}
 	}
 
 	return (

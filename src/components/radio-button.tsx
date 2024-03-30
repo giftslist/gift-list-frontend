@@ -10,17 +10,45 @@ interface RadioButtonProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const colors = [
-	{ name: "red", value: "bg-red-200 text-red-900" },
-	{ name: "emerald", value: "bg-emerald-200 text-emerald-900" },
-	{ name: "sky", value: "bg-sky-200 text-sky-900" },
-	{ name: "orange", value: "bg-orange-200 text-orange-900" },
+	{
+		name: "red",
+		value: "bg-red-200 text-red-900  border-2 border-solid border-red-200",
+	},
+	{
+		name: "emerald",
+		value:
+			"bg-emerald-200 text-emerald-900  border-2 border-solid border-emerald-200",
+	},
+	{
+		name: "sky",
+		value: "bg-sky-200 text-sky-900  border-2 border-solid border-sky-200",
+	},
+	{
+		name: "orange",
+		value:
+			"bg-orange-200 text-orange-900  border-2 border-solid border-orange-200",
+	},
 ];
 
 const darkColors = [
-	{ name: "red", value: "bg-red-300 text-red-900" },
-	{ name: "emerald", value: "bg-emerald-300 text-emerald-900" },
-	{ name: "sky", value: "bg-sky-300 text-sky-900" },
-	{ name: "orange", value: "bg-orange-300 text-orange-900" },
+	{
+		name: "red",
+		value: "bg-red-400 text-red-100 border-2 border-solid border-red-900",
+	},
+	{
+		name: "emerald",
+		value:
+			"bg-emerald-400 text-emerald-100 border-2 border-solid border-emerald-900",
+	},
+	{
+		name: "sky",
+		value: "bg-sky-400 text-sky-100 border-2 border-solid border-sky-900",
+	},
+	{
+		name: "orange",
+		value:
+			"bg-orange-400 text-orange-100 border-2 border-solid border-orange-900",
+	},
 ];
 
 export function RadioButton({
@@ -40,7 +68,7 @@ export function RadioButton({
 			className={twMerge(
 				"relative flex flex-row items-center gap-2 w-fit p-2 rounded-lg font-bold text-xs",
 				colors.find((color) => color.name === kind)?.value,
-				checked ? darkColor : ""
+				checked && darkColor // Adiciona a classe darkColor apenas quando o radio button estiver marcado
 			)}
 		>
 			{icon}
@@ -49,7 +77,7 @@ export function RadioButton({
 				value={value}
 				checked={checked}
 				className="opacity-0 absolute top-0 left-0"
-				{...register("type_event", {
+				{...register("type", {
 					required: "Tipo do evento é obrigatório",
 				})}
 				{...rest}

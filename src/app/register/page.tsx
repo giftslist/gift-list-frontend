@@ -44,7 +44,9 @@ export default function Page() {
 			)
 			.then(() => {
 				toast.success("Cadastrado com sucesso!");
-				router.push("/");
+				setTimeout(() => {
+					router.push("/");
+				}, 1000);
 			})
 			.catch((error) => {
 				toast.error(error.message);

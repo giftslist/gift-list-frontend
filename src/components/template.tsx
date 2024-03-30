@@ -14,16 +14,24 @@ interface User {
 
 export function Template({ back, children }: TemplateProps) {
 	const router = useRouter();
-	const storagedUser: string = localStorage.getItem("user") || "";
-	const user: User = JSON.parse(storagedUser);
+	let storagedUser: string | null = null;
+	let user: User = { id: "" };
+
+	// Verifica se o código está sendo executado no navegador antes de acessar o localStorage
+	if (typeof window !== "undefined") {
+		storagedUser = localStorage.getItem("user");
+		if (storagedUser) {
+			user = JSON.parse(storagedUser);
+		}
+	}
 
 	useEffect(() => {
-		if (!user.id) {
+		const pathname = window.location.pathname;
+
+		if (!user.id && pathname === "/dashboard") {
 			router.push("/");
-		} else {
-			router.push("/dashboard");
 		}
-	}, []);
+	}, [user.id]);
 
 	return (
 		<div className="bg-orange-100 h-screen flex flex-col justify-between items-center">

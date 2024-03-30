@@ -1,17 +1,28 @@
 "use client";
 
+import { api } from "@api";
 import { Cake, Knife, Rings, Toy, Trash } from "@/assets/icons";
 import { RadioButton, Template } from "@components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Event {
-	name_event: string;
-	type_event: string;
-	date_event: string;
+	name: string;
+	type: string;
+	date: string;
+}
+
+interface User {
+	id: string;
+	name: string;
 }
 
 export default function Page() {
+	const [formOpen, setFormOpen] = useState(false);
+	const [user, setUser] = useState<User | null>(null);
+
 	const {
 		watch,
 		register,
@@ -22,8 +33,17 @@ export default function Page() {
 		mode: "all",
 	});
 
-	const storagedUser = localStorage.getItem("user") || "";
-	const user = JSON.parse(storagedUser);
+	useEffect(() => {
+		// Verifica se o localStorage está disponível
+		if (typeof window !== "undefined" && window.localStorage) {
+			const storagedUser = localStorage.getItem("user");
+			if (storagedUser) {
+				setUser(JSON.parse(storagedUser));
+			}
+		}
+	}, []);
+
+	const hasEvent = false;
 
 	const hours = new Date().getHours();
 	const welcomeText =
@@ -33,12 +53,30 @@ export default function Page() {
 			? "Boa tarde"
 			: "Boa noite";
 
-	const hasEvent = false;
-	const formOpen = true;
-
-	const submitForm = (data: Event) => {
-		console.log(data); // Aqui você pode fazer o que quiser com os dados do formulário
-	};
+	async function submitForm({ date, name, type }: Event) {
+		await api
+			.post(
+				"/events",
+				{
+					date,
+					name,
+					type,
+					host_id: user?.id,
+				},
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			)
+			.then(() => {
+				toast.success(`O evento 👉${name}👈 foi cadastrado com sucesso!`);
+				setFormOpen(false);
+			})
+			.catch((error) => {
+				toast.error(error.message);
+			});
+	}
 
 	const validateEventDate = (selectedDate: string) => {
 		const currentDate = new Date();
@@ -56,20 +94,26 @@ export default function Page() {
 					<div className="flex flex-row justify-between items-center">
 						<div>
 							<h1 className="text-2xl text-sky-950 font-bold">
-								Bora criar seu evento, {user.name}!
+								Bora criar seu evento, {user?.name}!
 							</h1>
 							<span className=" text-sky-950 text-sm">
 								Preencha os campos abaixo
 							</span>
 						</div>
-						<button type="button" className="font-black text-red-900 text-3xl">
+						<button
+							type="button"
+							className="font-black text-red-900 text-3xl"
+							onClick={() => {
+								setFormOpen(false);
+							}}
+						>
 							&#10005;
 						</button>
 					</div>
 				) : (
 					<div>
 						<h1 className="text-2xl text-sky-950 font-bold">
-							{welcomeText}! {user.name}, como vai?
+							{welcomeText}! {user?.name}, como vai?
 						</h1>
 						<span className=" text-sky-950 text-sm">
 							Bem-vindo(a) a sua dashboard!
@@ -83,7 +127,7 @@ export default function Page() {
 							<Cake size="150" />
 							<div className="flex flex-col">
 								<span className="text-sky-950 text-xl font-semibold">
-									Aniversario do Enzo
+									ANIVERSARIO do Enzo
 								</span>
 								<span className="text-orange-800 font-medium">22/04/2024</span>
 								<button className="bg-emerald-700 p-2 rounded-lg text-white text-sm font-bold mt-3">
@@ -97,6 +141,9 @@ export default function Page() {
 						<button
 							className="w-full bg-emerald-700 text-white font-bold p-5 rounded-lg hover:bg-emerald-600"
 							type="button"
+							onClick={() => {
+								setFormOpen(true);
+							}}
 						>
 							Criar Evento
 						</button>
@@ -108,89 +155,89 @@ export default function Page() {
 						onSubmit={handleSubmit(submitForm)}
 						className="flex flex-col justify-center gap-y-4"
 					>
-						<label htmlFor="name_event" className="text-yellow-900 text-xs">
+						<label htmlFor="name" className="text-yellow-900 text-xs">
 							Nome do evento
 						</label>
 						<input
 							className={`p-2 text-sm rounded-lg placeholder:text-xs focus:outline-none focus:border-yellow-600 ${
-								errors.name_event ? "border-b-2 border-red-800" : ""
+								errors.name ? "border-b-2 border-red-800" : ""
 							}`}
 							type="text"
-							id="name_event"
+							id="name"
 							placeholder="Digite aqui..."
-							{...register("name_event", {
+							{...register("name", {
 								required: "Nome do evento é obrigatório",
 							})}
 						/>
-						{errors.name_event && (
+						{errors.name && (
 							<span className="text-xs text-red-950 mb-1">
-								{errors.name_event.message}
+								{errors.name.message}
 							</span>
 						)}
-						<label htmlFor="type_event" className="text-yellow-900 text-xs">
+						<label htmlFor="type" className="text-yellow-900 text-xs">
 							Tipo do evento
 						</label>
-						<div className="flex flex-row gap-2 flex-wrap" id="type_event">
+						<div className="flex flex-row gap-2 flex-wrap" id="type">
 							<RadioButton
 								icon={<Toy />}
 								label="Chá de Bebê"
-								value="cha_bebe"
+								value="CHA_DE_BEBE"
 								kind="red"
-								checked={getValues("type_event") === "cha_bebe"}
+								checked={getValues("type") === "CHA_DE_BEBE"}
 								register={register}
 							/>
 
 							<RadioButton
 								icon={<Knife />}
 								label="Chá de Cozinha"
-								value="cha_cozinha"
+								value="CHA_COZINHA"
 								kind="orange"
-								checked={getValues("type_event") === "cha_cozinha"}
+								checked={getValues("type") === "CHA_COZINHA"}
 								register={register}
 							/>
 
 							<RadioButton
 								icon={<Cake />}
 								label="Aniversário"
-								value="aniversario"
+								value="ANIVERSARIO"
 								kind="emerald"
-								checked={getValues("type_event") === "aniversario"}
+								checked={getValues("type") === "ANIVERSARIO"}
 								register={register}
 							/>
 
 							<RadioButton
 								icon={<Rings />}
 								label="Lista de Casamento"
-								value="lista_de_casamento"
+								value="CASAMENTO"
 								kind="sky"
-								checked={getValues("type_event") === "lista_de_casamento"}
+								checked={getValues("type") === "CASAMENTO"}
 								register={register}
 							/>
 						</div>
-						{errors.type_event && (
+						{errors.type && (
 							<span className="text-xs text-red-950 mb-1">
-								{errors.type_event.message}
+								{errors.type.message}
 							</span>
 						)}
-						<label htmlFor="date_event" className="text-yellow-900 text-xs">
+						<label htmlFor="date" className="text-yellow-900 text-xs">
 							Data do evento
 						</label>
 						<input
 							className={`p-2 text-sm rounded-lg placeholder:text-xs focus:outline-none focus:border-yellow-600 ${
-								errors.date_event ? "border-b-2 border-red-800" : ""
+								errors.date ? "border-b-2 border-red-800" : ""
 							}`}
 							type="date"
-							id="date_event"
-							{...register("date_event", {
+							id="date"
+							{...register("date", {
 								required: "Data do evento é obrigatória",
 								validate: (value) =>
 									validateEventDate(value) ||
 									"A data do evento deve ser a partir de hoje!!",
 							})}
 						/>
-						{errors.date_event && (
+						{errors.date && (
 							<span className="text-xs text-red-950 mb-1">
-								{errors.date_event.message}
+								{errors.date.message}
 							</span>
 						)}
 
@@ -205,6 +252,8 @@ export default function Page() {
 						>
 							{isSubmitting ? "Enviando..." : "Cadastrar evento"}
 						</button>
+
+						<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
 					</form>
 				)}
 
@@ -230,8 +279,6 @@ export default function Page() {
 						</div>
 					</div>
 				)}
-
-				<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
 			</div>
 		</Template>
 	);
