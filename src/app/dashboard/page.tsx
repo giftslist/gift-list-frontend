@@ -1,12 +1,11 @@
 "use client";
 
-import { api } from "@api";
+import { api, useFetchCreateEvent } from "@api";
 import { Cake, Knife, Rings, Toy, Trash } from "@/assets/icons";
 import { RadioButton, Template } from "@components";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 interface Event {
 	name: string;
@@ -32,6 +31,7 @@ export default function Page() {
 	} = useForm<Event>({
 		mode: "all",
 	});
+	const { createEvent, eventError, eventLoading } = useFetchCreateEvent();
 
 	useEffect(() => {
 		// Verifica se o localStorage está disponível
@@ -46,6 +46,7 @@ export default function Page() {
 	const hasEvent = false;
 
 	const hours = new Date().getHours();
+
 	const welcomeText =
 		hours > 0 && hours < 12
 			? "Bom dia"
@@ -54,28 +55,12 @@ export default function Page() {
 			: "Boa noite";
 
 	async function submitForm({ date, name, type }: Event) {
-		await api
-			.post(
-				"/events",
-				{
-					date,
-					name,
-					type,
-					host_id: user?.id,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			)
-			.then(() => {
-				toast.success(`O evento 👉${name}👈 foi cadastrado com sucesso!`);
-				setFormOpen(false);
-			})
-			.catch((error) => {
-				toast.error(error.message);
-			});
+		if (!user) return;
+
+		await createEvent({ date, name, type, host_id: user.id }, () => {
+			toast.success(`O evento 👉${name}👈 foi cadastrado com sucesso!`);
+			setFormOpen(false);
+		});
 	}
 
 	const validateEventDate = (selectedDate: string) => {
@@ -85,7 +70,114 @@ export default function Page() {
 		return selectedDateTime >= currentDate; // Retorna true se a data selecionada for no futuro
 	};
 
-	const isFormValid = !Object.keys(errors).length; // Verifica se não há erros nos campos do formulário
+	const isFormValid = !Object.keys(errors).length;
+
+	const renderFormNewEvent = () => {
+		return (
+			<form
+				onSubmit={handleSubmit(submitForm)}
+				className="flex flex-col justify-center gap-y-4"
+			>
+				<label htmlFor="name" className="text-yellow-900 text-xs">
+					Nome do evento
+				</label>
+				<input
+					className={`p-2 text-sm rounded-lg placeholder:text-xs focus:outline-none focus:border-yellow-600 ${
+						errors.name ? "border-b-2 border-red-800" : ""
+					}`}
+					type="text"
+					id="name"
+					placeholder="Digite aqui..."
+					{...register("name", {
+						required: "Nome do evento é obrigatório",
+					})}
+				/>
+				{errors.name && (
+					<span className="text-xs text-red-950 mb-1">
+						{errors.name.message}
+					</span>
+				)}
+				<label htmlFor="type" className="text-yellow-900 text-xs">
+					Tipo do evento
+				</label>
+				<div className="flex flex-row gap-2 flex-wrap" id="type">
+					<RadioButton
+						icon={<Toy />}
+						label="Chá de Bebê"
+						value="CHA_DE_BEBE"
+						kind="red"
+						checked={getValues("type") === "CHA_DE_BEBE"}
+						register={register}
+					/>
+
+					<RadioButton
+						icon={<Knife />}
+						label="Chá de Cozinha"
+						value="CHA_COZINHA"
+						kind="orange"
+						checked={getValues("type") === "CHA_COZINHA"}
+						register={register}
+					/>
+
+					<RadioButton
+						icon={<Cake />}
+						label="Aniversário"
+						value="ANIVERSARIO"
+						kind="emerald"
+						checked={getValues("type") === "ANIVERSARIO"}
+						register={register}
+					/>
+
+					<RadioButton
+						icon={<Rings />}
+						label="Lista de Casamento"
+						value="CASAMENTO"
+						kind="sky"
+						checked={getValues("type") === "CASAMENTO"}
+						register={register}
+					/>
+				</div>
+				{errors.type && (
+					<span className="text-xs text-red-950 mb-1">
+						{errors.type.message}
+					</span>
+				)}
+				<label htmlFor="date" className="text-yellow-900 text-xs">
+					Data do evento
+				</label>
+				<input
+					className={`p-2 text-sm rounded-lg placeholder:text-xs focus:outline-none focus:border-yellow-600 ${
+						errors.date ? "border-b-2 border-red-800" : ""
+					}`}
+					type="date"
+					id="date"
+					{...register("date", {
+						required: "Data do evento é obrigatória",
+						validate: (value) =>
+							validateEventDate(value) ||
+							"A data do evento deve ser a partir de hoje!!",
+					})}
+				/>
+				{errors.date && (
+					<span className="text-xs text-red-950 mb-1">
+						{errors.date.message}
+					</span>
+				)}
+
+				<button
+					className={`bg-emerald-700 text-white font-bold text-base py-2 rounded-lg ${
+						isSubmitting || !isFormValid ? "opacity-50 cursor-not-allowed" : ""
+					}`}
+					type="submit"
+					disabled={isSubmitting || !isFormValid}
+				>
+					{isSubmitting ? "Enviando..." : "Cadastrar evento"}
+				</button>
+
+				<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
+			</form>
+		);
+	};
 
 	return (
 		<Template>
@@ -150,112 +242,7 @@ export default function Page() {
 					)}
 				</div>
 
-				{formOpen && (
-					<form
-						onSubmit={handleSubmit(submitForm)}
-						className="flex flex-col justify-center gap-y-4"
-					>
-						<label htmlFor="name" className="text-yellow-900 text-xs">
-							Nome do evento
-						</label>
-						<input
-							className={`p-2 text-sm rounded-lg placeholder:text-xs focus:outline-none focus:border-yellow-600 ${
-								errors.name ? "border-b-2 border-red-800" : ""
-							}`}
-							type="text"
-							id="name"
-							placeholder="Digite aqui..."
-							{...register("name", {
-								required: "Nome do evento é obrigatório",
-							})}
-						/>
-						{errors.name && (
-							<span className="text-xs text-red-950 mb-1">
-								{errors.name.message}
-							</span>
-						)}
-						<label htmlFor="type" className="text-yellow-900 text-xs">
-							Tipo do evento
-						</label>
-						<div className="flex flex-row gap-2 flex-wrap" id="type">
-							<RadioButton
-								icon={<Toy />}
-								label="Chá de Bebê"
-								value="CHA_DE_BEBE"
-								kind="red"
-								checked={getValues("type") === "CHA_DE_BEBE"}
-								register={register}
-							/>
-
-							<RadioButton
-								icon={<Knife />}
-								label="Chá de Cozinha"
-								value="CHA_COZINHA"
-								kind="orange"
-								checked={getValues("type") === "CHA_COZINHA"}
-								register={register}
-							/>
-
-							<RadioButton
-								icon={<Cake />}
-								label="Aniversário"
-								value="ANIVERSARIO"
-								kind="emerald"
-								checked={getValues("type") === "ANIVERSARIO"}
-								register={register}
-							/>
-
-							<RadioButton
-								icon={<Rings />}
-								label="Lista de Casamento"
-								value="CASAMENTO"
-								kind="sky"
-								checked={getValues("type") === "CASAMENTO"}
-								register={register}
-							/>
-						</div>
-						{errors.type && (
-							<span className="text-xs text-red-950 mb-1">
-								{errors.type.message}
-							</span>
-						)}
-						<label htmlFor="date" className="text-yellow-900 text-xs">
-							Data do evento
-						</label>
-						<input
-							className={`p-2 text-sm rounded-lg placeholder:text-xs focus:outline-none focus:border-yellow-600 ${
-								errors.date ? "border-b-2 border-red-800" : ""
-							}`}
-							type="date"
-							id="date"
-							{...register("date", {
-								required: "Data do evento é obrigatória",
-								validate: (value) =>
-									validateEventDate(value) ||
-									"A data do evento deve ser a partir de hoje!!",
-							})}
-						/>
-						{errors.date && (
-							<span className="text-xs text-red-950 mb-1">
-								{errors.date.message}
-							</span>
-						)}
-
-						<button
-							className={`bg-emerald-700 text-white font-bold text-base py-2 rounded-lg ${
-								isSubmitting || !isFormValid
-									? "opacity-50 cursor-not-allowed"
-									: ""
-							}`}
-							type="submit"
-							disabled={isSubmitting || !isFormValid}
-						>
-							{isSubmitting ? "Enviando..." : "Cadastrar evento"}
-						</button>
-
-						<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
-					</form>
-				)}
+				{formOpen && renderFormNewEvent()}
 
 				{hasEvent && (
 					<div className="flex flex-col gap-4">

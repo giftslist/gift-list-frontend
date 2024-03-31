@@ -2,10 +2,10 @@
 import { Template } from "@components";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { api } from "@/api";
+import { useFetchCreateUser } from "@/api";
 import { toast } from "sonner";
 import { useState } from "react";
-interface Register {
+interface Credentials {
 	name: string;
 	email: string;
 	password: string;
@@ -20,40 +20,19 @@ export default function Page() {
 		handleSubmit,
 		formState: { errors },
 		getValues,
-	} = useForm<Register>({
+	} = useForm<Credentials>({
 		mode: "all",
 	});
-	const [registerLoading, setRegisterLoading] = useState(false);
 
-	async function submitForm({ name, email, password }: Register) {
-		setRegisterLoading(true);
+	const { createUser, userLoading } = useFetchCreateUser();
 
-		api
-			.post(
-				"/users",
-				{
-					name,
-					email,
-					password,
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			)
-			.then(() => {
-				toast.success("Cadastrado com sucesso!");
-				setTimeout(() => {
-					router.push("/");
-				}, 1000);
-			})
-			.catch((error) => {
-				toast.error(error.message);
-			})
-			.finally(() => {
-				setRegisterLoading(false);
-			});
+	async function submitForm(credentials: Credentials) {
+		await createUser(credentials, () => {
+			toast.success("Cadastrado com sucesso!");
+			setTimeout(() => {
+				router.push("/");
+			}, 1000);
+		});
 	}
 
 	return (
@@ -167,10 +146,10 @@ export default function Page() {
 					<button
 						type="submit"
 						className={`bg-emerald-700 text-white font-bold text-base py-1 rounded-lg ${
-							registerLoading ? "text-emerald-950" : ""
+							userLoading ? "text-emerald-950" : ""
 						}`}
 					>
-						{registerLoading ? "Cadastrando..." : "Cadastrar"}
+						{userLoading ? "Cadastrando..." : "Cadastrar"}
 					</button>
 				</form>
 				<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>

@@ -1,7 +1,7 @@
 "use client";
 
 import { GiftHome } from "../assets/images/gift-home";
-import { api } from "@api";
+import { api, useFetchLogin } from "@api";
 import { Template } from "@components";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
@@ -24,33 +24,15 @@ export default function Page() {
 	} = useForm<Login>({
 		mode: "all",
 	});
-	const [loginLoading, setLoginLoading] = useState(false);
+	const { loginLoading, signIn } = useFetchLogin();
 
 	async function submitForm(credentials: Login) {
-		setLoginLoading(true);
-
-		// Verifica se o localStorage está disponível
 		if (typeof localStorage !== "undefined") {
-			await api
-				.post("users/login", {
-					...credentials,
-				})
-				.then((response) => {
-					localStorage.setItem("user", JSON.stringify(response.data));
-					router.push("dashboard");
-					toast.success("Logado com sucesso!");
-				})
-				.catch((error) => {
-					toast.error(error.message);
-				})
-				.finally(() => {
-					setLoginLoading(false);
-				});
-		} else {
-			console.error("O localStorage não está disponível neste ambiente.");
-			// Lida com o caso em que o localStorage não está disponível
-			setLoginLoading(false);
-			// Você pode fazer algo mais aqui, como exibir uma mensagem de erro para o usuário
+			await signIn(credentials, (data) => {
+				localStorage.setItem("user", JSON.stringify(data));
+				router.push("dashboard");
+				toast.success("Logado com sucesso!");
+			});
 		}
 	}
 
