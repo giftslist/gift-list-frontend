@@ -1,8 +1,14 @@
-export function Toy() {
+import React from "react";
+
+interface ToyProps {
+	size?: number;
+}
+
+export const Toy: React.FC<ToyProps> = ({ size = 27 }) => {
 	return (
 		<svg
-			width="27"
-			height="27"
+			width={size}
+			height={size}
 			viewBox="0 0 27 27"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
@@ -41,4 +47,4 @@ export function Toy() {
 			/>
 		</svg>
 	);
-}
+};

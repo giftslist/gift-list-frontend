@@ -1,12 +1,12 @@
-interface CakeTypes {
-	size?: string;
+interface CakeProps {
+	size: number;
 }
 
-export function Cake({ size }: CakeTypes) {
+export const Cake: React.FC<CakeProps> = ({ size }) => {
 	return (
 		<svg
-			width={size || "30"}
-			height={size || "28"}
+			width={size}
+			height={(size * 28) / 30}
 			viewBox="0 0 30 28"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
@@ -201,4 +201,4 @@ export function Cake({ size }: CakeTypes) {
 			</defs>
 		</svg>
 	);
-}
+};

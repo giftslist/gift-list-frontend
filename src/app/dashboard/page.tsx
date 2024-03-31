@@ -165,6 +165,7 @@ export default function Page() {
 							"A data do evento deve ser a partir de hoje!!",
 					})}
 				/>
+
 				{errors.date && (
 					<span className="text-xs text-red-950 mb-1">
 						{errors.date.message}
@@ -193,7 +194,7 @@ export default function Page() {
 			)}
 
 			<div className="flex flex-col gap-5">
-				{formOpen ? (
+				{formOpen && (
 					<div className="flex flex-row justify-between items-center">
 						<div>
 							<h1 className="text-2xl text-sky-950 font-bold">
@@ -213,7 +214,9 @@ export default function Page() {
 							&#10005;
 						</button>
 					</div>
-				) : (
+				)}
+
+				{!formOpen && (
 					<div>
 						<h1 className="text-2xl text-sky-950 font-bold">
 							{welcomeText}! {user?.name}, como vai?
@@ -224,38 +227,42 @@ export default function Page() {
 					</div>
 				)}
 
-				<div className="flex flex-row">
-					{hasEvent && (
-						<>
-							<Cake size="150" />
+				<button
+					className="w-full bg-emerald-700 text-white font-bold p-5 rounded-lg hover:bg-emerald-600"
+					type="button"
+					onClick={() => {
+						setFormOpen(true);
+					}}
+				>
+					Criar Evento
+				</button>
+
+				{hasEvent &&
+					dashboard?.events.map(({ date, name, type }) => (
+						<div className="flex flex-row justify-between items-center gap-2 border-b-2 border-sky-950 pb-5">
+							{type === "ANIVERSARIO" && <Cake size={100} />}
+							{type === "CASAMENTO" && <Rings size={100} />}
+							{type === "CHA_DE_BEBE" && <Toy size={100} />}
+							{type === "CHA_DE_COZINHA" && <Knife size={100} />}
+
 							<div className="flex flex-col">
 								<span className="text-sky-950 text-xl font-semibold">
-									ANIVERSARIO do Enzo
+									{name}
 								</span>
-								<span className="text-orange-800 font-medium">22/04/2024</span>
+								<span className="text-orange-800 font-medium">{date}</span>
 								<button className="bg-emerald-700 p-2 rounded-lg text-white text-sm font-bold mt-3">
 									Copie o link do evento
 								</button>
+								<button className="bg-sky-700 p-2 rounded-lg text-white text-sm font-bold mt-3">
+									Ver evento
+								</button>
 							</div>
-						</>
-					)}
-
-					{!hasEvent && !formOpen && (
-						<button
-							className="w-full bg-emerald-700 text-white font-bold p-5 rounded-lg hover:bg-emerald-600"
-							type="button"
-							onClick={() => {
-								setFormOpen(true);
-							}}
-						>
-							Criar Evento
-						</button>
-					)}
-				</div>
+						</div>
+					))}
 
 				{formOpen && renderFormNewEvent()}
 
-				{hasEvent && (
+				{/* {hasEvent && (
 					<div className="flex flex-col gap-4">
 						<span className="text-sky-950 font-bold">Lista de presentes:</span>
 
@@ -276,7 +283,7 @@ export default function Page() {
 							</div>
 						</div>
 					</div>
-				)}
+				)} */}
 			</div>
 		</Template>
 	);
