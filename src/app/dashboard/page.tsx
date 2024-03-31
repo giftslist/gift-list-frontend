@@ -1,6 +1,6 @@
 "use client";
 
-import { api, useFetchCreateEvent } from "@api";
+import { useFetchCreateEvent, useFetchDashboard } from "@api";
 import { Cake, Knife, Rings, Toy, Trash } from "@/assets/icons";
 import { RadioButton, Template } from "@components";
 import { useEffect, useState } from "react";
@@ -26,12 +26,14 @@ export default function Page() {
 		watch,
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
+		formState: { errors },
 		getValues,
 	} = useForm<Event>({
 		mode: "all",
 	});
-	const { createEvent, eventError, eventLoading } = useFetchCreateEvent();
+	const { createEvent, eventLoading } = useFetchCreateEvent();
+	const { dashboard, dashboardError, dashboardLoading, getDashboard } =
+		useFetchDashboard();
 
 	useEffect(() => {
 		// Verifica se o localStorage está disponível
@@ -43,7 +45,12 @@ export default function Page() {
 		}
 	}, []);
 
-	const hasEvent = false;
+	useEffect(() => {
+		if (!user) return;
+		getDashboard(user.id);
+	}, [user]);
+
+	const hasEvent = dashboard ? dashboard.events.length > 0 : false;
 
 	const hours = new Date().getHours();
 
@@ -54,7 +61,7 @@ export default function Page() {
 			? "Boa tarde"
 			: "Boa noite";
 
-	async function submitForm({ date, name, type }: Event) {
+	async function submitFormEvent({ date, name, type }: Event) {
 		if (!user) return;
 
 		await createEvent({ date, name, type, host_id: user.id }, () => {
@@ -75,7 +82,7 @@ export default function Page() {
 	const renderFormNewEvent = () => {
 		return (
 			<form
-				onSubmit={handleSubmit(submitForm)}
+				onSubmit={handleSubmit(submitFormEvent)}
 				className="flex flex-col justify-center gap-y-4"
 			>
 				<label htmlFor="name" className="text-yellow-900 text-xs">
@@ -166,12 +173,12 @@ export default function Page() {
 
 				<button
 					className={`bg-emerald-700 text-white font-bold text-base py-2 rounded-lg ${
-						isSubmitting || !isFormValid ? "opacity-50 cursor-not-allowed" : ""
+						eventLoading || !isFormValid ? "opacity-50 cursor-not-allowed" : ""
 					}`}
 					type="submit"
-					disabled={isSubmitting || !isFormValid}
+					disabled={eventLoading || !isFormValid}
 				>
-					{isSubmitting ? "Enviando..." : "Cadastrar evento"}
+					{eventLoading ? "Enviando..." : "Cadastrar evento"}
 				</button>
 
 				<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
@@ -181,6 +188,10 @@ export default function Page() {
 
 	return (
 		<Template>
+			{(dashboardLoading || eventLoading) && (
+				<img src="/spinner.gif" className="w-10" alt="Loading spinner" />
+			)}
+
 			<div className="flex flex-col gap-5">
 				{formOpen ? (
 					<div className="flex flex-row justify-between items-center">
