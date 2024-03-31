@@ -1,6 +1,7 @@
 "use client";
 
 import { useFetchCreateEvent, useFetchDashboard } from "@api";
+import { format, differenceInDays, parseISO } from "date-fns";
 import { Cake, Knife, Rings, Toy, Trash } from "@/assets/icons";
 import { RadioButton, Template } from "@components";
 import { useEffect, useState } from "react";
@@ -50,8 +51,17 @@ export default function Page() {
 		getDashboard(user.id);
 	}, [user]);
 
-	const hasEvent = dashboard ? dashboard.events.length > 0 : false;
+	const formatDate = (dateString: string): string => {
+		const currentDate = new Date();
+		const targetDate = parseISO(dateString);
+		const formattedDate = format(targetDate, "dd/MM/yyyy");
+		const daysDifference = differenceInDays(targetDate, currentDate);
+		const daysLeft = Math.max(0, daysDifference);
 
+		return `${formattedDate}, faltam ${daysLeft} dias`;
+	};
+
+	const hasEvent = dashboard ? dashboard.events.length > 0 : false;
 	const hours = new Date().getHours();
 
 	const welcomeText =
@@ -217,27 +227,30 @@ export default function Page() {
 				)}
 
 				{!formOpen && (
-					<div>
-						<h1 className="text-2xl text-sky-950 font-bold">
-							{welcomeText}! {user?.name}, como vai?
-						</h1>
-						<span className=" text-sky-950 text-sm">
-							Bem-vindo(a) a sua dashboard!
-						</span>
-					</div>
+					<>
+						<div>
+							<h1 className="text-2xl text-sky-950 font-bold">
+								{welcomeText}! {user?.name}, como vai?
+							</h1>
+							<span className=" text-sky-950 text-sm">
+								Bem-vindo(a) a sua dashboard!
+							</span>
+						</div>
+
+						<button
+							className="w-full bg-emerald-700 text-white font-bold p-5 rounded-lg hover:bg-emerald-600"
+							type="button"
+							onClick={() => {
+								setFormOpen(true);
+							}}
+						>
+							Criar Evento
+						</button>
+					</>
 				)}
 
-				<button
-					className="w-full bg-emerald-700 text-white font-bold p-5 rounded-lg hover:bg-emerald-600"
-					type="button"
-					onClick={() => {
-						setFormOpen(true);
-					}}
-				>
-					Criar Evento
-				</button>
-
 				{hasEvent &&
+					!formOpen &&
 					dashboard?.events.map(({ date, name, type }) => (
 						<div className="flex flex-row justify-between items-center gap-2 border-b-2 border-sky-950 pb-5">
 							{type === "ANIVERSARIO" && <Cake size={100} />}
@@ -249,7 +262,9 @@ export default function Page() {
 								<span className="text-sky-950 text-xl font-semibold">
 									{name}
 								</span>
-								<span className="text-orange-800 font-medium">{date}</span>
+								<span className="text-orange-800 font-medium">
+									{formatDate(date)}
+								</span>
 								<button className="bg-emerald-700 p-2 rounded-lg text-white text-sm font-bold mt-3">
 									Copie o link do evento
 								</button>

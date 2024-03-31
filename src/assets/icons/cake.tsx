@@ -1,8 +1,10 @@
+import React from "react";
+
 interface CakeProps {
-	size: number;
+	size?: number;
 }
 
-export const Cake: React.FC<CakeProps> = ({ size }) => {
+export const Cake: React.FC<CakeProps> = ({ size = 30 }) => {
 	return (
 		<svg
 			width={size}
