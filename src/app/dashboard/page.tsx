@@ -200,7 +200,7 @@ export default function Page() {
 
 	function copyToClipboard(event_id: string) {
 		navigator.clipboard
-			.writeText(`https://localhost:3000/guest/${event_id}`)
+			.writeText(`https://giftlist-frontend.vercel.app/guest/${event_id}`)
 			.then(() => {
 				toast.success(
 					"Link do evento copiado com sucesso. Agora, você pode enviá-lo para quem deseja convidar!"
