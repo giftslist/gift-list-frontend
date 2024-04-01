@@ -7,6 +7,7 @@ import { RadioButton, Template } from "@components";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface Event {
 	name: string;
@@ -197,6 +198,19 @@ export default function Page() {
 		);
 	};
 
+	function copyToClipboard(event_id: string) {
+		navigator.clipboard
+			.writeText(`https://localhost:3000/guest/${event_id}`)
+			.then(() => {
+				toast.success(
+					"Link do evento copiado com sucesso. Agora, você pode enviá-lo para quem deseja convidar!"
+				);
+			})
+			.catch((error) => {
+				toast.error("Ops houve um erro ao tentar copiar o link:", error);
+			});
+	}
+
 	return (
 		<Template>
 			{(dashboardLoading || eventLoading) && (
@@ -251,7 +265,7 @@ export default function Page() {
 
 				{hasEvent &&
 					!formOpen &&
-					dashboard?.events.map(({ date, name, type }) => (
+					dashboard?.events.map(({ date, name, type, id }) => (
 						<div className="flex flex-row justify-between items-center gap-2 border-b-2 border-sky-950 pb-5">
 							{type === "ANIVERSARIO" && <Cake size={100} />}
 							{type === "CASAMENTO" && <Rings size={100} />}
@@ -265,40 +279,25 @@ export default function Page() {
 								<span className="text-orange-800 font-medium">
 									{formatDate(date)}
 								</span>
-								<button className="bg-emerald-700 p-2 rounded-lg text-white text-sm font-bold mt-3">
+								<button
+									className="bg-emerald-700 p-2 rounded-lg text-white text-sm font-bold mt-3"
+									onClick={() => {
+										copyToClipboard(id);
+									}}
+								>
 									Copie o link do evento
 								</button>
-								<button className="bg-sky-700 p-2 rounded-lg text-white text-sm font-bold mt-3">
+								<Link
+									className="bg-sky-700 p-2 rounded-lg text-center text-white text-sm font-bold mt-3"
+									href={`/dashboard/event/${id}`}
+								>
 									Ver evento
-								</button>
+								</Link>
 							</div>
 						</div>
 					))}
 
 				{formOpen && renderFormNewEvent()}
-
-				{/* {hasEvent && (
-					<div className="flex flex-col gap-4">
-						<span className="text-sky-950 font-bold">Lista de presentes:</span>
-
-						<div className="flex flex-col gap-2">
-							<div className="flex flex-row justify-between items-center p-2 bg-orange-200 rounded-lg">
-								<span className="text-sm text-sky-950">Presente ...</span>
-
-								<button className="bg-red-950 p-2 rounded-lg">
-									<Trash />
-								</button>
-							</div>
-							<div className="flex flex-row justify-between items-center p-2 bg-orange-200 rounded-lg">
-								<span className="text-sm text-sky-950">Presente ...</span>
-
-								<button className="bg-red-950 p-2 rounded-lg">
-									<Trash />
-								</button>
-							</div>
-						</div>
-					</div>
-				)} */}
 			</div>
 		</Template>
 	);

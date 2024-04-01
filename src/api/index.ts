@@ -11,3 +11,6 @@ export { useFetchDashboard } from "./useFetchDashboard";
 export { useFetchCreateEvent } from "./useFetchCreateEvent";
 export { useFetchCreateUser } from "./useFetchCreateUser";
 export { useFetchLogin } from "./useFetchLogin";
+export { useFetchEvent } from "./useFetchEvent";
+export { useFetchCreateGifts } from "./useFetchCreateGifts";
+export { useFetchDeleteGift } from "./useFetchDeleteGift";

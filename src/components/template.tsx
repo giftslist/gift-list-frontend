@@ -7,13 +7,14 @@ import Spinner from "@/assets/images/spinner.gif";
 interface TemplateProps {
 	back?: boolean;
 	children: React.ReactNode;
+	loading?: boolean | undefined;
 }
 
 interface User {
 	id: string;
 }
 
-export function Template({ back, children }: TemplateProps) {
+export function Template({ back, loading, children }: TemplateProps) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(true);
 	let storagedUser: string | null = null;
@@ -48,7 +49,7 @@ export function Template({ back, children }: TemplateProps) {
 		<>
 			<div className="bg-orange-100 h-screen flex flex-col justify-between items-center">
 				<Header back={back} />
-				{isLoading ? (
+				{isLoading || loading ? (
 					<img src="/spinner.gif" className="w-10" alt="Loading spinner" />
 				) : (
 					children
