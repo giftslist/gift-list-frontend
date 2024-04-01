@@ -14,3 +14,4 @@ export { useFetchLogin } from "./useFetchLogin";
 export { useFetchEvent } from "./useFetchEvent";
 export { useFetchCreateGifts } from "./useFetchCreateGifts";
 export { useFetchDeleteGift } from "./useFetchDeleteGift";
+export { useFetchAddGifter } from "./useFetchAddGifter";

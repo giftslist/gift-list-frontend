@@ -13,9 +13,8 @@ interface Gifts {
 
 export default function Page({ params }: { params: { event_id: string } }) {
 	const { event, eventLoading, getEvent } = useFetchEvent();
-	const { createGift, giftError, giftLoading } = useFetchCreateGifts();
-	const { deleteGift, deleteGiftError, deleteGiftLoading } =
-		useFetchDeleteGift();
+	const { createGift, giftLoading } = useFetchCreateGifts();
+	const { deleteGift } = useFetchDeleteGift();
 	const {
 		watch,
 		register,
