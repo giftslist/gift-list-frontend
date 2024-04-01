@@ -147,16 +147,18 @@ export default function Page({ params }: { params: { event_id: string } }) {
 							<div className="flex flex-col gap-2">
 								{event.gifts.map((gift) => (
 									<div
-										className="flex flex-row justify-between items-center p-2 bg-orange-200 rounded-lg"
+										className={`flex flex-row justify-between items-center p-2 h-16 rounded-lg ${
+											gift.gift_giver ? "bg-green-200" : "bg-orange-200"
+										}`}
 										key={gift.id}
 									>
-										<span className="text-sm text-sky-950">{gift.name}</span>
+										<span className="text-sm text-sky-950">
+											{gift.name} {gift.gift_giver && `- ${gift.gift_giver}`}
+										</span>
 
-										{gift.gift_giver ? (
-											<></>
-										) : (
+										{!gift.gift_giver && (
 											<button
-												className="bg-red-950 p-2 rounded-lg hover:bg-red-800"
+												className="p-2 rounded-lg bg-red-950 hover:bg-red-800"
 												onClick={() => {
 													removeGift(gift.id);
 												}}
