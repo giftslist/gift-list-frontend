@@ -81,7 +81,7 @@ export default function Page({ params }: { params: { event_id: string } }) {
 	if (!event) return;
 
 	return (
-		<Template loading={eventLoading || gifterLoading} logout>
+		<Template loading={eventLoading || gifterLoading}>
 			<div className="w-[500px] flex flex-col gap-4">
 				{!gifterName && (
 					<>

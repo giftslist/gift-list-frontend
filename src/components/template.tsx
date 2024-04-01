@@ -4,8 +4,6 @@ import { Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 
 interface TemplateProps {
-	back?: boolean;
-	logout?: boolean;
 	children: React.ReactNode;
 	loading?: boolean;
 }
@@ -14,7 +12,7 @@ interface User {
 	id: string;
 }
 
-export function Template({ back, logout, loading, children }: TemplateProps) {
+export function Template({ loading, children }: TemplateProps) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(true);
 	let storagedUser: string | null = null;
@@ -48,7 +46,7 @@ export function Template({ back, logout, loading, children }: TemplateProps) {
 	return (
 		<>
 			<div className="bg-orange-100 h-screen flex flex-col justify-between items-center">
-				<Header back={back || false} logout={logout || false} />
+				<Header />
 
 				{isLoading || loading ? (
 					<img src="/spinner.gif" className="w-10" alt="Loading spinner" />

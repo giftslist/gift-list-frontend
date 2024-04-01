@@ -36,7 +36,7 @@ export default function Page() {
 	}
 
 	return (
-		<Template back>
+		<Template>
 			<div className="flex flex-col gap-5">
 				<div>
 					<h2 className="text-xl text-sky-950 font-bold">

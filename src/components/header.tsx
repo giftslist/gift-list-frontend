@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-interface HeaderProps {
-	back?: boolean;
-	logout?: boolean;
-}
-
-export function Header({ back, logout }: HeaderProps) {
+export function Header() {
 	const router = useRouter();
+
+	if (typeof window === "undefined") return;
+
 	const pathname = window.location.pathname.split("/");
-	console.log(pathname);
 
 	return (
 		<header className="w-full p-6 flex flex-row justify-between items-center">
