@@ -5,6 +5,7 @@ import { Template } from "@components";
 import { useFetchEvent, useFetchAddGifter } from "@api";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 interface Gifter {
 	name: string;
@@ -23,6 +24,7 @@ export default function Page({ params }: { params: { event_id: string } }) {
 	} = useForm<Gifter>({
 		mode: "all",
 	});
+	const router = useRouter();
 
 	useEffect(() => {
 		getEvent(params.event_id);
@@ -79,7 +81,7 @@ export default function Page({ params }: { params: { event_id: string } }) {
 	if (!event) return;
 
 	return (
-		<Template loading={eventLoading || gifterLoading}>
+		<Template loading={eventLoading || gifterLoading} logout>
 			<div className="w-[500px] flex flex-col gap-4">
 				{!gifterName && (
 					<>

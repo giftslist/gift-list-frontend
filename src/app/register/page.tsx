@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useFetchCreateUser } from "@/api";
 import { toast } from "sonner";
-import { useState } from "react";
+
 interface Credentials {
 	name: string;
 	email: string;
