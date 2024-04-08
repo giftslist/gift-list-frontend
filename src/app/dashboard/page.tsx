@@ -79,6 +79,8 @@ export default function Page() {
 			toast.success(`O evento 👉${name}👈 foi cadastrado com sucesso!`);
 			setFormOpen(false);
 		});
+
+		await getDashboard(user.id);
 	}
 
 	const validateEventDate = (selectedDate: string) => {
@@ -270,7 +272,7 @@ export default function Page() {
 							{type === "ANIVERSARIO" && <Cake size={100} />}
 							{type === "CASAMENTO" && <Rings size={100} />}
 							{type === "CHA_DE_BEBE" && <Toy size={100} />}
-							{type === "CHA_DE_COZINHA" && <Knife size={100} />}
+							{type === "CHA_COZINHA" && <Knife size={100} />}
 
 							<div className="flex flex-col">
 								<span className="text-sky-950 text-xl font-semibold">

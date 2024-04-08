@@ -6,6 +6,7 @@ import { useFetchCreateGifts, useFetchDeleteGift, useFetchEvent } from "@api";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface Gifts {
 	gift: string;
@@ -104,11 +105,25 @@ export default function Page({ params }: { params: { event_id: string } }) {
 
 					<div>
 						<h1 className="text-2xl text-sky-950 font-bold">{event.name}!</h1>
-						<span className=" text-sky-950 text-sm">
+						<span className=" text-sky-950 text-sm ">
 							{formOpen
 								? "Preencha os dados abaixo para cadastrar seu presente"
 								: "Adicione ou remova presentes do seu evento"}
 						</span>
+
+						{!formOpen && (
+							<>
+								<br />
+								<br />
+
+								<Link
+									href="/dashboard"
+									className="bg-sky-700 text-white font-bold p-2 rounded-lg hover:bg-sky-600"
+								>
+									Voltar para Dashboard
+								</Link>
+							</>
+						)}
 					</div>
 					{formOpen && (
 						<button

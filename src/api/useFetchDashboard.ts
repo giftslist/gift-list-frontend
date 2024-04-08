@@ -10,7 +10,7 @@ type Gift = {
 type Event = {
 	id: string;
 	name: string;
-	type: "CHA_DE_BEBE" | "ANIVERSARIO" | "CHA_DE_COZINHA" | "CASAMENTO";
+	type: "CHA_DE_BEBE" | "ANIVERSARIO" | "CHA_COZINHA" | "CASAMENTO";
 	date: string;
 	gifts: Gift[];
 };
