@@ -13,14 +13,29 @@ type Data = {
 	name: string;
 };
 
+/**
+ * A custom hook to handle user login with API interaction.
+ *
+ * @returns {Object} An object containing the error state, loading state, and the signIn function.
+ * @returns {string|null} return.loginError - The error message if the login fails, or null if there is no error.
+ * @returns {boolean} return.loginLoading - The loading state indicating whether the login is in progress.
+ * @returns {Function} return.signIn - The function to sign in a user.
+ */
 export function useFetchLogin() {
-	const [loginError, setLoginError] = useState(null);
-	const [loginLoading, setLoginLoading] = useState(false);
+	const [loginError, setLoginError] = useState<string | null>(null);
+	const [loginLoading, setLoginLoading] = useState<boolean>(false);
 
+	/**
+	 * Signs in a user by making an API request.
+	 *
+	 * @param {Credentials} credentials - The credentials for logging in the user.
+	 * @param {Function} callback - The callback function to be called upon successful login, receiving user data.
+	 * @returns {Promise<void>} A promise that resolves when the login process is complete.
+	 */
 	async function signIn(
 		credentials: Credentials,
 		callback: (data: Data) => void
-	) {
+	): Promise<void> {
 		setLoginError(null);
 		setLoginLoading(true);
 

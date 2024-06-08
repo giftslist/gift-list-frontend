@@ -2,12 +2,13 @@
 
 import { useFetchCreateEvent, useFetchDashboard } from "@api";
 import { format, differenceInDays, parseISO } from "date-fns";
-import { Cake, Knife, Rings, Toy, Trash } from "@/assets/icons";
+import { Cake, Knife, Rings, Toy } from "@/assets/icons";
 import { RadioButton, Template } from "@components";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Event {
 	name: string;
@@ -33,16 +34,23 @@ export default function Page() {
 	} = useForm<Event>({
 		mode: "all",
 	});
+	const router = useRouter();
 	const { createEvent, eventLoading } = useFetchCreateEvent();
-	const { dashboard, dashboardError, dashboardLoading, getDashboard } =
-		useFetchDashboard();
+	const { dashboard, dashboardLoading, getDashboard } = useFetchDashboard();
 
 	useEffect(() => {
 		// Verifica se o localStorage está disponível
 		if (typeof window !== "undefined" && window.localStorage) {
 			const storagedUser = localStorage.getItem("user");
+			const link = localStorage.getItem("last_id_event");
+
 			if (storagedUser) {
 				setUser(JSON.parse(storagedUser));
+			}
+
+			if (link) {
+				router.push(`/guest/${link}`);
+				return;
 			}
 		}
 	}, []);
@@ -62,7 +70,10 @@ export default function Page() {
 		return `${formattedDate}, faltam ${daysLeft} dias`;
 	};
 
-	const hasEvent = dashboard ? dashboard.events.length > 0 : false;
+	const hasEvent = dashboard
+		? dashboard?.my_events?.length > 0 || dashboard?.another_events?.length > 0
+		: false;
+
 	const hours = new Date().getHours();
 
 	const welcomeText =
@@ -194,8 +205,6 @@ export default function Page() {
 				>
 					{eventLoading ? "Enviando..." : "Cadastrar evento"}
 				</button>
-
-				<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
 			</form>
 		);
 	};
@@ -267,37 +276,109 @@ export default function Page() {
 
 				{hasEvent &&
 					!formOpen &&
-					dashboard?.events.map(({ date, name, type, id }) => (
-						<div className="flex flex-row justify-between items-center gap-2 border-b-2 border-sky-950 pb-5">
-							{type === "ANIVERSARIO" && <Cake size={100} />}
-							{type === "CASAMENTO" && <Rings size={100} />}
-							{type === "CHA_DE_BEBE" && <Toy size={100} />}
-							{type === "CHA_COZINHA" && <Knife size={100} />}
+					dashboard?.my_events &&
+					dashboard?.another_events && (
+						<>
+							{dashboard?.my_events?.length > 0 && (
+								<>
+									<p className="text-sky-950 text-sm font-semibold">
+										Seus eventos:
+									</p>
+									<div className="relative max-h-[400px] overflow-hidden">
+										<div className="overflow-y-auto pr-4 max-h-[400px] custom-scrollbar">
+											{dashboard?.my_events.map(({ date, name, type, id }) => (
+												<div
+													key={id}
+													className="flex flex-row justify-start items-center gap-2 border-b-2 border-sky-950 p-5"
+												>
+													{type === "ANIVERSARIO" && <Cake size={100} />}
+													{type === "CASAMENTO" && <Rings size={100} />}
+													{type === "CHA_DE_BEBE" && <Toy size={100} />}
+													{type === "CHA_COZINHA" && <Knife size={100} />}
 
-							<div className="flex flex-col">
-								<span className="text-sky-950 text-xl font-semibold">
-									{name}
-								</span>
-								<span className="text-orange-800 font-medium">
-									{formatDate(date)}
-								</span>
-								<button
-									className="bg-emerald-700 p-2 rounded-lg text-white text-sm font-bold mt-3"
-									onClick={() => {
-										copyToClipboard(id);
-									}}
-								>
-									Copie o link do evento
-								</button>
-								<Link
-									className="bg-sky-700 p-2 rounded-lg text-center text-white text-sm font-bold mt-3"
-									href={`/dashboard/event/${id}`}
-								>
-									Ver evento
-								</Link>
-							</div>
-						</div>
-					))}
+													<div className="flex flex-col">
+														<span className="text-sky-950 text-xl font-semibold">
+															{name}
+														</span>
+														<span className="text-orange-800 font-medium">
+															{formatDate(date)}
+														</span>
+														<div className="flex flex-row justify-between gap-2">
+															<button
+																className="bg-emerald-700 p-2 text-center rounded-lg text-white text-sm font-bold mt-3 w-full"
+																onClick={() => {
+																	copyToClipboard(id);
+																}}
+															>
+																Copie o link do evento
+															</button>
+
+															<Link
+																className="bg-sky-700 p-2 rounded-lg text-center text-white text-sm font-bold mt-3 w-full flex items-center justify-center"
+																href={`/dashboard/event/${id}`}
+															>
+																<span>Ver evento</span>
+															</Link>
+														</div>
+													</div>
+												</div>
+											))}
+										</div>
+
+										<div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none">
+											<div className="h-full bg-gradient-to-t from-orange-100 to-transparent"></div>
+										</div>
+									</div>
+								</>
+							)}
+
+							{dashboard?.another_events?.length > 0 && (
+								<>
+									<p className="text-sky-950 text-sm font-semibold">
+										Eventos que você participa:
+									</p>
+									<div className="relative max-h-[400px] overflow-hidden">
+										<div className="overflow-y-auto pr-4 max-h-[400px] custom-scrollbar">
+											{dashboard?.another_events.map(
+												({ date, name, type, id }) => (
+													<div
+														key={id}
+														className="flex flex-row justify-around items-center gap-2 border-b-2 border-sky-950 p-5"
+													>
+														{type === "ANIVERSARIO" && <Cake size={100} />}
+														{type === "CASAMENTO" && <Rings size={100} />}
+														{type === "CHA_DE_BEBE" && <Toy size={100} />}
+														{type === "CHA_COZINHA" && <Knife size={100} />}
+
+														<div className="flex flex-col w-[70%]">
+															<span className="text-sky-950 text-xl font-semibold">
+																{name}
+															</span>
+															<span className="text-orange-800 font-medium">
+																{formatDate(date)}
+															</span>
+															<div className="flex flex-row justify-between gap-2">
+																<Link
+																	className="bg-sky-700 p-2 rounded-lg text-center text-white text-sm font-bold mt-3 w-full"
+																	href={`/guest/${id}`}
+																>
+																	Ver evento
+																</Link>
+															</div>
+														</div>
+													</div>
+												)
+											)}
+										</div>
+
+										<div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none">
+											<div className="h-full bg-gradient-to-t from-orange-100 to-transparent"></div>
+										</div>
+									</div>
+								</>
+							)}
+						</>
+					)}
 
 				{formOpen && renderFormNewEvent()}
 			</div>

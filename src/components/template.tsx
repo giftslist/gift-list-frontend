@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Footer, Header } from "../components";
 import { Toaster } from "sonner";
 import { useRouter } from "next/navigation";

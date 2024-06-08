@@ -22,6 +22,8 @@ type User = {
 };
 
 type Dashboard = {
+	my_events: Event[];
+	another_events: Event[];
 	user: User;
 	events: Event[];
 };

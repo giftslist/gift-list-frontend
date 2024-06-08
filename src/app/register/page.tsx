@@ -152,7 +152,6 @@ export default function Page() {
 						{userLoading ? "Cadastrando..." : "Cadastrar"}
 					</button>
 				</form>
-				<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
 			</div>
 		</Template>
 	);

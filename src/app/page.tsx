@@ -6,7 +6,6 @@ import { Template } from "@components";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface Login {
@@ -30,6 +29,7 @@ export default function Page() {
 		if (typeof localStorage !== "undefined") {
 			await signIn(credentials, (data) => {
 				localStorage.setItem("user", JSON.stringify(data));
+
 				router.push("dashboard");
 				toast.success("Logado com sucesso!");
 			});
@@ -114,7 +114,6 @@ export default function Page() {
 							</Link>
 						</div>
 					</form>
-					<pre className="mt-4">{JSON.stringify(watch(), null, 2)}</pre>
 				</div>
 			</main>
 		</Template>
